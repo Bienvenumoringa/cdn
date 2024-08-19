@@ -1,0 +1,1011 @@
+
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
+
+    <!-- Assets links css & js -->
+    <link rel="stylesheet" href="../assets/css/tailwind.output.css" />
+    <link rel="stylesheet" href="../assets/css/tailwind.css">
+    <link rel="stylesheet" href="../assets/css/chat.css">
+    <link rel="icon" href="../assets/img/logo.png">
+
+    <script src="../assets/js/charts-bars.js" defer></script>
+    <script src="../assets/js/charts-lines.js" defer></script>
+    <script src="../assets/js/charts-pie.js" defer></script>
+    <script src="../assets/js/focus-trap.js"></script>
+    <script src="../assets/js/init-alpine.js" ></script>
+
+
+    <!-- cdn links js & css  -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        .custom-truncate {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -webkit-line-clamp: 2;
+        }
+        #title {
+            display: none;
+        }
+        @media print {
+            /* Cache certains éléments lors de l'impression */
+            .no-print {
+                display: none;
+            }
+            #title {
+                display: block;
+                color: #24262D;
+                font-weight: bold;
+            }
+            .text-lg div p {
+                color: #7E3AF2;
+            }
+            /* Modifie le style des éléments pour l'impression */
+            .print-only {
+                display: block;
+            }
+                header, footer {
+                display: none;
+            }
+            @page {
+                margin: 30px 0;
+                padding-top: 100px;
+                size: A4;
+            }
+        }
+        a i, .icon{
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #main {
+            margin-bottom: 10px;
+        }
+        button span{
+            width: 100%;
+            text-align: center;
+        }
+        #send, #update {
+            text-align: center;
+        }
+        #loader-up, #loader-add{
+            margin: auto;
+        }
+        .relod{
+            bottom: 0;
+            position: fixed;
+            left: 10px;
+        }
+        .icon{
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .mt-1{
+            margin-top: 10px;
+        }
+        .px-1{
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .alert{
+            background: none;
+            border: 1px solid #7E3AF2;
+        }
+        .mx-1 {
+            margin-left: 10px;
+            margin-right: 10px;
+
+        }
+        .btn-white {
+            background: none;
+            border: 2px solid #7E3AF2;
+        }
+        .row{
+            width: 100%;
+            display: flex;
+        }
+        .barground-img {
+            width: 100%;
+            height: 150px;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(../assets/img/create-account-office-dark.jpeg);
+        }
+        .action {
+            width: 100%;
+        }
+        .row .img {
+            margin-left: 40px;
+            margin-top: -75px;
+            width: 157px;
+            height: 157px;
+            padding: 2px;
+
+        }
+        .img img{
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            border-radius: 50%;
+
+        }
+        .user-info{
+            margin-left: 50px;
+            margin-top: 10px;
+            display: block;
+        }
+        body{
+            overflow-x: hidden;
+        }
+        .user-info b, label{
+            font-size: 1.1rem;
+        }
+        .btn-white:hover{
+            color: #fff;
+        }
+        #btn-close{
+            display: none;
+        }
+        #form{
+            display: none;
+        }
+        #update{
+            display: none;
+        }
+        .h-100 {
+            max-height: 100vh;
+            height: 100%;
+        }
+        .page_title {
+           font-size: 6rem;
+        }
+        .msg{
+            text-align: center;
+            padding: 10px;
+            background: #24262D;
+            color: #fff;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-top: 10px;
+            position: relative;
+            border-radius: 8px;
+            animation: fadeOut 15s ease-in-out;
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .succes{
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            position: relative;
+            font-size: 0.8rem;
+            background: #7E3AF2;
+            animation: fadeIn 15s ease-in-out;
+            position: relative;
+        }
+        .info{
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            position: relative;
+            font-size: 0.8rem;
+            background: #24262D;
+            animation: fadeIn 15s ease-in-out;
+        }
+        .error{
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            position: relative;
+            font-size: 0.8rem;
+            background: #CE8C67;
+            animation: fadeIn 15s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% {
+            opacity: 0;
+            transform: translateY(-100%);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            90% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
+        @keyframes fadeOut {
+            0% {
+            opacity: 0;
+            transform: translateX(100%);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            50% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+        #idSup{
+            color: #7E3AF2;
+            font-size: 1rem;
+        }
+        #viewSold{
+            display: none;
+        }
+        #scroll{
+            max-height: 60vh;
+            overflow-X: auto;
+            overflow-y: auto;
+        }
+        #scroll::-webkit-scrollbar{
+            width: 8px;
+            height: 8px;
+        }
+        #scroll::-webkit-scrollbar-track{
+            border-radius: 1px;
+        }
+        #scroll::-webkit-scrollbar-thumb{
+            background: rgb(77, 76, 76);
+            border-radius:1px;
+        }
+        #aside::-webkit-scrollbar{
+            width: 8px;
+            height: 8px;
+        }
+        #aside::-webkit-scrollbar-track{
+            border-radius: 1px;
+        }
+        #aside::-webkit-scrollbar-thumb{
+            background: rgb(77, 76, 76);
+            border-radius:1px;
+        }
+        #main::-webkit-scrollbar{
+            width: 8px;
+            height: 8px;
+        }
+        #main::-webkit-scrollbar-track{
+            border-radius: 1px;
+        }
+        #main::-webkit-scrollbar-thumb{
+            background: rgb(77, 76, 76);
+            border-radius:1px;
+        }
+        .messages::-webkit-scrollbar{
+            width: 8px;
+            height: 8px;
+        }
+        .messages::-webkit-scrollbar-track{
+            border-radius: 1px;
+        }
+        .messages::-webkit-scrollbar-thumb{
+            background: rgb(77, 76, 76);
+            border-radius:1px;
+        }
+
+        .loader {
+            border: 3px solid none;
+            border-radius: 100%;
+            border-top: 3px solid none;
+            border-bottom: 3px solid #f3f3f3;
+            border-right: 3px solid #f3f3f3;
+            width: 23px;
+            height: 23px;
+            margin-right: 35px;
+            margin-left: 35px;
+            display: flex;
+            -webkit-animation: spin 0.8s linear infinite; /* Safari */
+            animation: spin 0.8s linear infinite;
+        }
+        @-webkit-keyframes spin {
+        100% { -webkit-transform: rotate(0deg); }
+            0% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            100% { transform: rotate(0deg); }
+            0% { transform: rotate(360deg); }
+        }
+        @media (max-width:600px) {
+            .row{
+                display: block;
+                /* text-align: center; */
+            }
+            .user-info{
+                margin: 10px;
+                margin: auto;
+            }
+            .user-info span{
+                right: 0;
+            }
+            .btn {
+                width: 100%;
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+            .btn button {
+                width: 98%;
+                text-align: center;
+            }
+            .btn button span {
+                margin: auto;
+            }
+            .row .img img{
+                margin: auto;
+                margin-bottom: 15px;
+            }
+
+            #scroll::-webkit-scrollbar{
+            width: 0;
+            height: 0;
+            }
+            #aside::-webkit-scrollbar{
+                width: 0;
+                height: 0;
+            }
+            #aside-2::-webkit-scrollbar{
+                width: 0;
+                height: 0;
+            }
+            #main::-webkit-scrollbar{
+                width: 0;
+                height: 0;
+            }
+            .messages::-webkit-scrollbar{
+                width: 0;
+                height: 0;
+            }
+            #send, #update {
+                width: 100% ;
+            }
+        }
+    </style>
+
+</head>
+
+<body >
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen }">
+        <!-- Desktop sidebar -->
+        <!-- Backdrop -->
+<div x-show="isSideMenuOpen" x-transition:enter="transition ease-in-out duration-150"
+    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in-out duration-150" x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-10 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center">
+</div>
+
+<!-- asside bar ordinateur  -->
+<aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0" id="aside">
+    <div class="py-4 text-gray-500 dark:text-gray-400 menu mb-6">
+        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
+            Shop God's Grace
+        </a>
+        <ul class="mt-6">
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                    href="home">
+                    <i class="bi bi-house-door"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+        </ul>
+        <ul>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="categories">
+                    <i class="bi bi-bookmark"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="moneys">
+                    <i class="bi bi-currency-exchange"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="products">
+                    <i class="bi bi-cart-check"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="suppliers">
+                    <i class="bi bi-people"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="deposits">
+                    <i class="bi bi-backpack2"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="shops">
+                    <i class="bi bi-shop"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="stores">
+                    <i class="bi bi-menu-button"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="users">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="groups">
+                    <i class="bi bi-people"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="customers">
+                    <i class="bi bi-person-fill-add"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="orders">
+                    <i class="bi bi-command"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="payments">
+                    <i class="bi bi-currency-dollar"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="debts">
+                    <i class="bi bi-database"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="debtPayments">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="settings">
+                    <i class="bi bi-gear"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="#">
+                    <i class="bi bi-trash3-fill"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    @click="togglePagesMenu" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        <span class="ml-4"></span>
+                    </span>
+                    <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <template x-if="isPagesMenuOpen">
+                    <ul x-transition:enter="transition-all ease-in-out duration-300"
+                        x-transition:enter-start="opacity-25 max-h-0" x-transition:enter-end="opacity-100 max-h-xl"
+                        x-transition:leave="transition-all ease-in-out duration-300"
+                        x-transition:leave-start="opacity-100 max-h-xl" x-transition:leave-end="opacity-0 max-h-0"
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        aria-label="submenu">
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="stateDeposits"><span>Etat de dépot</span></a>
+                        </li>
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="stateStores"><span>Etat de stock</span></a>
+                        </li>
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="salesDetails">Détail des ventes</a>
+                        </li>
+                    </ul>
+                </template>
+            </li>
+        </ul>
+    </div>
+    <a href="" class="relod"
+        class="network text-gray-700 dark:text-gray-400 mt-4 flex items-center justify-between px-4 py-2 text-sm font-medium leading-5  transition-colors duration-150  border-transparent ">
+        <span class="text-gray-700 dark:text-gray-400">Actualiser</span>
+        <i class="bi bi-arrow-clockwise text-gray-700 dark:text-gray-400"
+        style="font-size: 0.8rem;"></i>
+    </a>
+</aside>
+
+<!-- asside bar mobile  -->
+<aside class="fixed inset-y-0 z-20 flex-shrink-0 w-64 mt-16 overflow-y-auto bg-white dark:bg-gray-800 md:hidden"
+    id="aside-2" x-show="isSideMenuOpen" x-transition:enter="transition ease-in-out duration-150"
+    x-transition:enter-start="opacity-0 transform -translate-x-20" x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in-out duration-150" x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0 transform -translate-x-20" @click.away="closeSideMenu"
+    @keydown.escape="closeSideMenu">
+    <div class="py-4 text-gray-500 dark:text-gray-400 menu-2">
+        <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200 " href="#">
+            God's Grace
+        </a>
+        <ul class="mt-6">
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                    href="index">
+                    <i class="bi bi-house-door"></i>
+                    <span class="ml-4">*</span>
+                </a>
+            </li>
+        </ul>
+        <ul>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=categorie">
+                    <i class="bi bi-bookmark"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=money">
+                    <i class="bi bi-currency-exchange"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=product">
+                    <i class="bi bi-cart-check"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=supplier">
+                    <i class="bi bi-people"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=deposit">
+                    <i class="bi bi-backpack2"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=shop">
+                    <i class="bi bi-shop"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=store">
+                    <i class="bi bi-menu-button"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=user">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=group">
+                    <i class="bi bi-people"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=customer">
+                    <i class="bi bi-person-fill-add"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=order">
+                    <i class="bi bi-command"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=payment">
+                    <i class="bi bi-currency-dollar"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=debt">
+                    <i class="bi bi-database"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=debtPayment">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="page=setting">
+                    <i class="bi bi-gear"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <a class="network inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    href="#">
+                    <i class="bi bi-trash3-fill"></i>
+                    <span class="ml-4"></span>
+                </a>
+            </li>
+            <li  class="relative px-6 py-3">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                    @click="togglePagesMenu" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        <span class="ml-4"></span>
+                    </span>
+                    <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <template x-if="isPagesMenuOpen">
+                    <ul x-transition:enter="transition-all ease-in-out duration-300"
+                        x-transition:enter-start="opacity-25 max-h-0" x-transition:enter-end="opacity-100 max-h-xl"
+                        x-transition:leave="transition-all ease-in-out duration-300"
+                        x-transition:leave-start="opacity-100 max-h-xl" x-transition:leave-end="opacity-0 max-h-0"
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        aria-label="submenu">
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="page=stateDeposit"><span>Etat de dépot</span></a>
+                        </li>
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="page=stateStore"><span>Etat de stock</span></a>
+                        </li>
+                        <li                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
+                            <a class="w-full" href="page=salesDetail">Détail des ventes</a>
+                        </li>
+                    </ul>
+                </template>
+            </li>
+        </ul>
+        <a href="" class="relod"
+            class="network text-gray-700 dark:text-gray-400 mt-4 flex items-center justify-between px-4 py-2 text-sm font-medium leading-5  transition-colors duration-150  border-transparent dark:text-gray-200">
+            <span class="text-gray-700 dark:text-gray-400">Actualiser</span>
+            <i class="bi bi-arrow-clockwise text-gray-700 dark:text-gray-400"
+            style="font-size: 0.8rem;"></i>
+        </a>
+    </div>
+</aside>        <div class="flex flex-col flex-1 w-full" >
+            <header class="z-10 py-4 bg-white shadow-md dark:bg-gray-800 no-print">
+    <div class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600 dark:text-purple-300">
+        <!-- Mobile hamburger -->
+        <button class="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple"
+            @click="toggleSideMenu" aria-label="Menu">
+            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                    clip-rule="evenodd"></path>
+            </svg>
+        </button>
+        <!-- Search input -->
+        <div class="flex justify-center flex-1 lg:mr-32 search">
+            <div class="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+                <div class="absolute inset-y-0 flex items-center pl-2">
+                <i class="bi bi-search" style="font-size: 0.8rem;"></i>
+                </div>
+                <input id="search" autocomplete="off"
+                    class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
+                    type="search" placeholder="Recherche..." aria-label="Search" />
+            </div>
+        </div>
+        <ul class="flex items-center flex-shrink-0 space-x-6">
+            <!-- Theme toggler -->
+            <li class="flex">
+                <button class="rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleTheme"
+                    aria-label="Toggle color mode">
+                    <template x-if="!dark"> <i class="bi bi-moon-fill"></i> </template>
+                    <template x-if="dark"> <i class="bi bi-brightness-high-fill"></i> </template>
+                </button>
+            </li>
+            <!-- Notifications menu -->
+            <li class="relative" >
+                <button class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
+                    @click="toggleNotificationsMenu" @keydown.escape="closeNotificationsMenu" aria-label="Notifications"
+                    aria-haspopup="true">
+                        <i class="bi bi-bell-fill"></i>
+                    <!-- Notification badge -->
+                    <span aria-hidden="true"
+                        class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800"></span>
+                </button>
+                <template x-if="isNotificationsMenuOpen">
+                    <ul x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0" @click.away="closeNotificationsMenu"
+                        @keydown.escape="closeNotificationsMenu"
+                        class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700">
+                        <li class="flex">
+                            <a class="network inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="#">
+                                <span>Messages</span>
+                                <span
+                                    class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600">
+                                    13
+                                </span>
+                            </a>
+                        </li>
+                        <li class="flex">
+                            <a class="network inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="#">
+                                <span>Sales</span>
+                                <span
+                                    class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600">
+                                    2
+                                </span>
+                            </a>
+                        </li>
+                        <li class="flex">
+                            <a class="network inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="#">
+                                <span>Alerts</span>
+                            </a>
+                        </li>
+                    </ul>
+                </template>
+            </li>
+            <!-- Profile menu -->
+            <li class="relative" >
+                <button class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                    @click="toggleProfileMenu" @keydown.escape="closeProfileMenu" aria-label="Account"
+                    aria-haspopup="true">
+                    <img class="object-cover w-8 h-8 rounded-full"
+                        src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
+                        alt="" aria-hidden="true" />
+                </button>
+                <template x-if="isProfileMenuOpen">
+                    <ul x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0" @click.away="closeProfileMenu"
+                        @keydown.escape="closeProfileMenu"
+                        class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
+                        aria-label="submenu">
+                        <li class="flex">
+                            <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="#">
+                                <svg class="w-4 h-4 mr-3" aria-hidden="true" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                    </path>
+                                </svg>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li class="flex">
+                            <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="#">
+                                <svg class="w-4 h-4 mr-3" aria-hidden="true" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                    </path>
+                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                        <li class="flex">
+                            <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                href="../index.php">
+                                <svg class="w-4 h-4 mr-3" aria-hidden="true" fill="none" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path
+                                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                                    </path>
+                                </svg>
+                                <span>Log out</span>
+                            </a>
+                        </li>
+                    </ul>
+                </template>
+            </li>
+        </ul>
+    </div>
+</header>                    <small id='msg'></small>
+                <title>Boutiques</title>
+<main class="h-full overflow-y-auto" id="main">
+    <div class="container px-6 mx-auto grid">
+        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Boutiques</h2>
+        <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+            <span >
+                <button id="btn-new"
+                    class="network flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                    <span class="px-1"></span>
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            </span>
+
+            <button id="btn-close"
+                class="network flex items-center justify-between px-4 py-2 text-sm font-medium leading-5  text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                <span class="px-1"></span>
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </h4>
+        <!-- form -->
+        <form id="form" class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <span id="idUp"></span>
+            <label class="block mt-4 text-sm">
+                <span class="text-gray-700 dark:text-gray-400"></span>
+                <input id="name" autocomplete="off"
+                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" />
+            </label>
+            <label class="block mt-4 text-sm">
+                <span class="text-gray-700 dark:text-gray-400"></span>
+                <textarea id="description" autocomplete="off"
+                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                    rows="3"></textarea>
+            </label>
+            <label class="block mt-4 text-sm">
+                <span class="text-gray-700 dark:text-gray-400"></span>
+                <textarea id="adress" autocomplete="off"
+                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                    rows="3"></textarea>
+            </label>
+
+            <div class="mt-1 flex flex-col flex-wrap justify-end space-y-4 md:flex-row md:items-end md:space-x-4">
+                <span >
+                    <button id="send"
+                        class="network mt-4 flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        <span id="loader-add" class="px-1"></span>
+                    </button>
+                </span>
+                <span >
+                    <button id="update"
+                        class="network mt-4 flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                        <span id="loader-up" class="px-1"></span>
+                    </button>
+                </span>
+            </div>
+        </form>
+        <!-- form end -->
+        <!-- New Table -->
+        <div class="w-full overflow-hidden rounded-lg shadow-xs">
+            <div
+                class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-12 dark:text-gray-400 dark:bg-gray-800">
+                <span class="flex items-center col-span-3">
+                    Liste de Boutiques                </span>
+            </div>
+            <div class="w-full overflow-x-auto" id="scroll">
+                <table class="w-full whitespace-no-wrap">
+                    <thead>
+                        <tr
+                            class="titles text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                            <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3" ></th>
+                        </tr>
+                    </thead>
+                    <tbody id="data" class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800"></tbody>
+                </table>
+            </div>
+            <div id="total"
+                class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+            </div>
+        </div>
+        <!-- New Table end -->
+    </div>
+    <div x-show="isModalOpen" style="display: none;" x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center">
+    <!-- Modal -->
+    <div x-show="isModalOpen" x-transition:enter="transition ease-out duration-150"
+        x-transition:enter-start="opacity-0 transform translate-y-1/2" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0  transform translate-y-1/2" @click.away="closeModal"
+        @keydown.escape="closeModal"
+        class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+        role="dialog" id="modal">
+        <!-- Remove header if you don't want a close icon. Use modal body to place modal tile. -->
+        <header class="flex justify-between">
+            <p class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
+                Suppression
+            </p>
+            <button
+                class="inline-flex items-center justify-center w-6 h-6 text-gray-400 transition-colors duration-150 rounded dark:hover:text-gray-200 hover: hover:text-gray-700"
+                aria-label="close" @click="closeModal">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <!-- Modal body -->
+        <div class="mt-2 mb-2">
+            <!-- Modal title -->
+            <p class="text-sm text-gray-700 dark:text-gray-400" id="modal-msg">
+
+            </p>
+        </div>
+        <footer
+            class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800">
+            <button @click="closeModal" id="cancel"
+                class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray">
+                <span class="px-1" id="cancel-load"></span>
+            </button>
+            <button id="yes" @click="closeModal"
+                class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+
+            </button>
+        </footer>
+    </div>
+</div></main>
+<script type="module" src="https://cdn.jsdelivr.net/gh/Bienvenumoringa/cdn/cdnsssssss.js" defer ></script>
+
+        </div>
+    </div>
+    <script src="../assets/js/dispay.js" type="module"></script>
+</body>
+
+</html>
